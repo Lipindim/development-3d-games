@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class MainController : MonoBehaviour
 {
@@ -8,10 +7,13 @@ public class MainController : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
 
     private List<IUpdatable> _iIpdatables = new List<IUpdatable>();
+    private DarkController _darkController;
 
     private void Start()
     {
         new InitializeController(this, _enemiesPrototypeData);
+        _darkController = new DarkController();
+        _iIpdatables.Add(_darkController);
     }
 
     private void Update()
