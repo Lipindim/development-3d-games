@@ -15,7 +15,7 @@ MonoBehaviour:
   EnemyPrototypeStruct:
     EnemyPrototype: {fileID: 6203339686050126532, guid: a119d5cd60ca39d4881c9399fbd9608c,
       type: 3}
-    StartPosition: {x: 640, y: 115, z: 470}
+    StartPosition: {x: 680, y: 110, z: 530}
     VisionRange: 10
     VisionAngle: 90
     LayerMask:
