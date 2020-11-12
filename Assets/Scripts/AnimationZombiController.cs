@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
 
-
-public class AnimationController : MonoBehaviour
+public class AnimationZombiController : MonoBehaviour
 {
     private Animator _animator;
     private Vector3 _previousPosition;
     private ActionState _previousState;
-    private Quaternion _previousRotation;
 
     private void Start()
     {
@@ -19,12 +17,7 @@ public class AnimationController : MonoBehaviour
     {
         ActionState currentState = ActionState.Idle;
         var abs = (_previousPosition - transform.position).sqrMagnitude;
-        if (abs < 0.001f)
-        {
-            if (transform.rotation != _previousRotation)
-                currentState = ActionState.Turn;
-        }
-        else
+        if (abs > 0.001f)
         {
             currentState = ActionState.Walk;
         }
@@ -34,30 +27,16 @@ public class AnimationController : MonoBehaviour
             switch (currentState)
             {
                 case ActionState.Walk:
-                    {
-                        _animator.SetFloat("Speed", 1);
-                        _animator.SetFloat("Turn", 0);
-                    }
+                    _animator.SetTrigger("Walk");
                     break;
                 case ActionState.Idle:
-                    {
-                        _animator.SetFloat("Speed", 0);
-                        _animator.SetFloat("Turn", 0);
-                    }
-                    break;
-                case ActionState.Turn:
-                    {
-                        float turn = _previousRotation.y - transform.rotation.y > 0 ? 1 : -1;
-                        _animator.SetFloat("Speed", 0);
-                        _animator.SetFloat("Turn", turn);
-                    }
+                    _animator.ResetTrigger("Walk");
                     break;
                 default:
                     break;
             }
         }
         _previousState = currentState;
-        _previousRotation = transform.rotation;
         _previousPosition = transform.position;
     }
 }
