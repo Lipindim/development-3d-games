@@ -61,12 +61,9 @@ public class HealthController : MonoBehaviour
     {
         _currentHealthValue -= damage;
         OnChangeHealth?.Invoke(_currentHealthValue);
+
         if (_currentHealthValue <= 0)
-        {
             OnDie?.Invoke();
-            if (!gameObject.CompareTag("Player"))
-                Destroy(gameObject);
-        }
     }
 
     #endregion Methods

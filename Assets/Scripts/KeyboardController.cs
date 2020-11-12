@@ -6,10 +6,12 @@ public class KeyboardController : MonoBehaviour
 
     #region Fields
 
-    //private ObjectSpawner _mineSpawner;
-    //private ItemCollector _itemCollector;
-    //private ItemActivator _itemActivator;
+    [SerializeField] private GameObject _gun;
+    [SerializeField] private MainMenu _mainMenu;
+
+
     private HealthController _playerHealthController;
+    private ShotController _shotController;
 
     #endregion
 
@@ -19,15 +21,19 @@ public class KeyboardController : MonoBehaviour
     private void Start()
     {
         _playerHealthController = GetComponent<HealthController>();
-        //_mineSpawner = GetComponent<ObjectSpawner>();
-        //_itemCollector = GetComponent<ItemCollector>();
-        //_itemActivator = GetComponent<ItemActivator>();
+        _shotController = _gun.GetComponent<ShotController>();
     }
 
     private void Update()
     {
+        if (MainMenu.IsPause)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Mouse0))
-            _playerHealthController.Hurt(1);
+            _shotController.ShotToDirection(_gun.transform.forward);
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            _mainMenu.PauseGame();
     }
 
     #endregion

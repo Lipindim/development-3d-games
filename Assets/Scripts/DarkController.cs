@@ -18,12 +18,12 @@ public class DarkController : IUpdatable
 
     public void UpdateTick()
     {
-        if (IsPlayerInEnemyZone())
-            MakeItDarker();
-        else
-        {
-            MakeItLighter();
-        }
+        //if (IsPlayerInEnemyZone())
+        //    MakeItDarker();
+        //else
+        //{
+        //    MakeItLighter();
+        //}
     }
 
     private static void MakeItDarker()
