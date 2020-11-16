@@ -19,6 +19,8 @@ public class FriendsController : MonoBehaviour
     private void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
+        if (string.IsNullOrWhiteSpace(_displayMessage))
+            _isMessageDisplay = true;
     }
 
 
@@ -39,7 +41,8 @@ public class FriendsController : MonoBehaviour
             if (sqrMagnitude < _activateDistanse * _activateDistanse)
             {
                 _uiDisplayController.DisplayCheckPointMessage(_dialogMessage, 10.0f);
-                _gun.SetActive(true);
+                if (_gun != null)
+                    _gun.SetActive(true);
                 _isDialogActivated = true;
             }
         }

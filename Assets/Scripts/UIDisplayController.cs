@@ -10,8 +10,11 @@ public class UIDisplayController : MonoBehaviour
     [SerializeField] private Text _checkPointText;
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _exitButton;
+    [SerializeField] private GameObject _restartButton;
+    [SerializeField] private GameObject _dieText;
 
     private float _maxHealth;
+    private float _displayTime;
 
     #endregion
 
@@ -25,6 +28,17 @@ public class UIDisplayController : MonoBehaviour
         _maxHealth = healthController.HealthValue;
     }
 
+
+    private void Update()
+    {
+        if (_displayTime > 0)
+        {
+            _displayTime -= Time.deltaTime;
+            if (_displayTime <= 0)
+                ClearCheckPointMessage();
+        }
+    }
+
     #endregion
 
 
@@ -33,7 +47,7 @@ public class UIDisplayController : MonoBehaviour
     public void DisplayCheckPointMessage(string message, float displayTime)
     {
         _checkPointText.text = message;
-        Invoke(nameof(ClearCheckPointMessage), displayTime);
+        _displayTime = displayTime;
     }
 
     private void ClearCheckPointMessage()
@@ -51,6 +65,13 @@ public class UIDisplayController : MonoBehaviour
     {
         _continueButton.SetActive(false);
         _exitButton.SetActive(false);
+    }
+
+    public void ShowRestart()
+    {
+        _restartButton.SetActive(true);
+        _exitButton.SetActive(true);
+        _dieText.SetActive(true);
     }
     #endregion
 }

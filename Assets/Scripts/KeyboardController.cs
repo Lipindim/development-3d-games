@@ -30,7 +30,7 @@ public class KeyboardController : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
-            _shotController.ShotToDirection(_gun.transform.forward);
+            _shotController.Shot();
 
         if (Input.GetKeyDown(KeyCode.Escape))
             _mainMenu.PauseGame();

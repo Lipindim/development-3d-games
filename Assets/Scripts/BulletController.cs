@@ -6,10 +6,11 @@ public class BulletController : MonoBehaviour
 
     #region Fields
 
+    [SerializeField] private ParticleSystem _particleSystem;
     [SerializeField] private int _damage = 1;
 
-    private GameObject _player;
     private bool _isCollisionEnter;
+    private Rigidbody _rigidBody;
 
     #endregion
 
@@ -18,22 +19,38 @@ public class BulletController : MonoBehaviour
 
     private void Start()
     {
-        _player = GameObject.FindGameObjectWithTag("Player");
         _isCollisionEnter = false;
+        _rigidBody = GetComponent<Rigidbody>();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void Update()
     {
+        if (!_isCollisionEnter)
+        {
+            transform.position += transform.forward * Time.deltaTime * 30;
+        }
+
+
+        if (_isCollisionEnter && !_particleSystem.isPlaying)
+            Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        print("вошёл в тригер");
         if (_isCollisionEnter)
             return;
 
         _isCollisionEnter = true;
+        _particleSystem.Play();
+        
+
         if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Player"))
         {
+            
             var healthController = collision.gameObject.GetComponent<HealthController>();
             healthController.Hurt(_damage);
         }
-        Destroy(gameObject);
     }
 
     #endregion

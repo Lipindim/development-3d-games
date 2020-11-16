@@ -6,29 +6,23 @@ public class ShotController : MonoBehaviour
 
     #region Fields
 
-    [SerializeField] private GameObject _spawnBullet;
-    [SerializeField] private Transform[] _bulletSpawnPoints;
+    [SerializeField] private Transform _sightPosition;
+    [SerializeField] private GameObject _bloodDecal;
+    [SerializeField] private GameObject _woodDecal;
+    [SerializeField] private GameObject _metallDecal;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Animator _animator;
+    [SerializeField] private ParticleSystem _muzzleFlashEffect;
 
+    [SerializeField] private LayerMask _mask;
     [SerializeField] private float _reloadTime = 1.0f;
-    [SerializeField] private float _shotPower = 50.0f;
 
     private bool _isReload;
-    private int _currentAmmoSpawnPointIndex;
 
     #endregion
 
 
     #region Properties
-
-    public Transform CurrentAmmoSpawnPoint
-    {
-        get
-        {
-            return _bulletSpawnPoints[_currentAmmoSpawnPointIndex];
-        }
-    }
 
     public bool IsReload
     {
@@ -43,31 +37,50 @@ public class ShotController : MonoBehaviour
 
     #region Methods
 
-    public void ShotToPint(Vector3 pointToShot)
-    {
-        Vector3 directionToShot = pointToShot - CurrentAmmoSpawnPoint.position;
-        ShotToDirection(directionToShot);
-    }
 
-    public void ShotToDirection(Vector3 directionToShot)
+    public void Shot()
     {
         if (!_isReload)
         {
             if (!gameObject.activeSelf)
                 return;
 
-                _isReload = true;
-            GameObject bullet = Instantiate(_spawnBullet, CurrentAmmoSpawnPoint.position, CurrentAmmoSpawnPoint.rotation);
-            bullet.GetComponent<Rigidbody>().AddForce(directionToShot.normalized * _shotPower);
+             _isReload = true;
             Invoke(nameof(Reload), _reloadTime);
-            NextAmmoSpawnPoint();
-            _animator.SetTrigger("shot");
-        }
-    }
+            //Сделать рэйкаст и попадание
 
-    private void NextAmmoSpawnPoint()
-    {
-        _currentAmmoSpawnPointIndex = (_currentAmmoSpawnPointIndex + 1) % _bulletSpawnPoints.Length;
+            RaycastHit hit;
+            var rayCast = Physics.Raycast(_sightPosition.position, _sightPosition.forward, out hit);
+            if (rayCast)
+            {
+                var rotation = new Quaternion(_sightPosition.rotation.x + 180, _sightPosition.rotation.y, _sightPosition.rotation.z, _sightPosition.rotation.w);
+
+
+                GameObject decal = null;
+                var targetGameObject = hit.collider.gameObject;
+                if (targetGameObject.name.Equals("Terrain"))
+                {
+                    decal = Instantiate(_woodDecal, hit.point, rotation);
+                }
+                else if (targetGameObject.CompareTag("Metal") || targetGameObject.transform.parent.gameObject.CompareTag("Metal"))
+                {
+                    decal = Instantiate(_metallDecal, hit.point, rotation);
+                }
+                else if (targetGameObject.tag.Equals("Enemy"))
+                {
+                    decal = Instantiate(_bloodDecal, hit.point, rotation);
+                    var health = targetGameObject.GetComponent<HealthController>();
+                    health.Hurt(1);
+                }
+
+                if (decal != null)
+                    decal.transform.parent = hit.collider.transform;
+            }
+
+
+            _animator.SetTrigger("shot");
+            _muzzleFlashEffect.Play();
+        }
     }
 
     private void Reload()
