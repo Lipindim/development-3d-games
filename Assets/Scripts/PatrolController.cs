@@ -18,6 +18,7 @@ public class PatrolController : MonoBehaviour
     private float _waitTime = 5;
     private float _currentWaitTime;
     private float _sqrVisionRange;
+    private Animator _animator;
 
     private Vector3 CurrentPatrolPosition
     {
@@ -35,17 +36,25 @@ public class PatrolController : MonoBehaviour
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _player = GameObject.FindGameObjectWithTag("Player");
         _sqrVisionRange = _visionRange * _visionRange;
+        _animator = GetComponent<Animator>();
     }
 
 
     private void Update()
     {
+        if (!IsPlayerInVision())
+        {
+            if (IsWaitState())
+                Wait();
+            else
+                Patrol();
+        }
+    }
+
+    private void OnAnimatorIK()
+    {
         if (IsPlayerInVision())
             LookAtPlayer();
-        else if (IsWaitState())
-            Wait();
-        else
-            Patrol();
     }
 
     private bool IsPlayerInVision()
@@ -56,10 +65,12 @@ public class PatrolController : MonoBehaviour
 
     private void LookAtPlayer()
     {
-        _navMeshAgent.ResetPath();
+        //_navMeshAgent.ResetPath();
         Vector3 playerPosition = _player.transform.position;
-        Vector3 lookPosition = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
-        transform.LookAt(lookPosition);
+        Vector3 lookPosition = new Vector3(playerPosition.x, playerPosition.y + 1.0f, playerPosition.z);
+        _animator.SetLookAtWeight(1);
+        _animator.SetLookAtPosition(lookPosition);
+        //transform.LookAt(lookPosition);
     }
 
     private void Patrol()

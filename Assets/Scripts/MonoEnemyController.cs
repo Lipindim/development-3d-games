@@ -19,9 +19,11 @@ public class MonoEnemyController : MonoBehaviour
 
     private GameObject _player;
     private NavMeshAgent _navMeshAgent;
+    private AnimationZombiController _animationZombie;
+
     private Vector3 _targetPosition;
     private bool _isDie;
-    
+    private bool _isAttacking;
 
     #endregion
 
@@ -34,6 +36,17 @@ public class MonoEnemyController : MonoBehaviour
         _player = GameObject.FindGameObjectWithTag("Player");
         _isDie = false;
         GetComponent<HealthController>().OnDie += MonoEnemyController_OnDie;
+        _animationZombie = GetComponent<AnimationZombiController>();
+        _animationZombie.OnAttackFinish += _animationZombie_OnAttackFinish;
+    }
+
+    private void _animationZombie_OnAttackFinish()
+    {
+        _isAttacking = false;
+        if (IsPlayerInAttackRange())
+        {
+            _player.GetComponent<HealthController>().Hurt(30.0f);
+        }
     }
 
     private void MonoEnemyController_OnDie()
@@ -59,16 +72,24 @@ public class MonoEnemyController : MonoBehaviour
 
         Vector3 directionToPlayer = _player.transform.position - transform.position;
 
-        if (IsPlayerInAttackRange(directionToPlayer))
+        if (IsPlayerInAttackRange())
         {
-            _player.GetComponent<HealthController>().Hurt(1.0f);
-            _navMeshAgent.ResetPath();
+            if (!_isAttacking)
+            {
+                _isAttacking = true;
+                _navMeshAgent.ResetPath();
+                _animationZombie.AttackAnimation();
+            }
         }
-
-        if (IsPlayerInVision(directionToPlayer))
+        else if (IsPlayerInVision(directionToPlayer))
         {
             LookAtPlayer();
             GoToPlayer();
+            _animationZombie.WalkAnimation();
+        }
+        else
+        {
+            _animationZombie.IdleAnimation();
         }
     }
 
@@ -103,21 +124,12 @@ public class MonoEnemyController : MonoBehaviour
         return true;
     }
 
-    private bool IsPlayerInAttackRange(Vector3 directionToPlayer)
+    private bool IsPlayerInAttackRange()
     {
-        if (_visionAngle < Vector3.Angle(directionToPlayer, transform.forward))
+        if ((_player.transform.position - transform.position).sqrMagnitude < _attackRange * _attackRange)
+            return true;
+        else
             return false;
-
-
-        RaycastHit hit;
-        Vector3 offsetPosition = new Vector3(transform.position.x, transform.position.y + RAYCAST_Y_OFFSET, transform.position.z);
-        var rayCast = Physics.Raycast(offsetPosition, directionToPlayer, out hit, _attackRange, _mask);
-        if (!rayCast)
-            return false;
-        if (!hit.collider.gameObject.CompareTag("Player"))
-            return false;
-
-        return true;
     }
 
     #endregion
