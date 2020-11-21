@@ -12,6 +12,8 @@ public class MonoEnemyController : MonoBehaviour
 
 
     #region Fields
+    [SerializeField] private AudioSource _kickSound;
+
     [SerializeField] private LayerMask _mask;
     [SerializeField] private float _visionAngle = 45.0f;
     [SerializeField] private float _visionRange = 20.0f;
@@ -24,6 +26,7 @@ public class MonoEnemyController : MonoBehaviour
     private Vector3 _targetPosition;
     private bool _isDie;
     private bool _isAttacking;
+    private bool _isDamaging;
 
     #endregion
 
@@ -35,9 +38,26 @@ public class MonoEnemyController : MonoBehaviour
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _player = GameObject.FindGameObjectWithTag("Player");
         _isDie = false;
-        GetComponent<HealthController>().OnDie += MonoEnemyController_OnDie;
+
+        var healthController = GetComponent<HealthController>();
+        healthController.OnDie += MonoEnemyController_OnDie;
+        healthController.OnChangeHealth += HealthController_OnChangeHealth;
+
         _animationZombie = GetComponent<AnimationZombiController>();
         _animationZombie.OnAttackFinish += _animationZombie_OnAttackFinish;
+        _animationZombie.OnDamageFinish += _animationZombie_OnDamageFinish;
+    }
+
+    private void _animationZombie_OnDamageFinish()
+    {
+        _isDamaging = false;
+    }
+
+    private void HealthController_OnChangeHealth(float value)
+    {
+        _navMeshAgent.ResetPath();
+        _isDamaging = true;
+        _animationZombie.GetDamageAnimation();
     }
 
     private void _animationZombie_OnAttackFinish()
@@ -45,6 +65,7 @@ public class MonoEnemyController : MonoBehaviour
         _isAttacking = false;
         if (IsPlayerInAttackRange())
         {
+            _kickSound.Play();
             _player.GetComponent<HealthController>().Hurt(30.0f);
         }
     }
@@ -53,6 +74,7 @@ public class MonoEnemyController : MonoBehaviour
     {
         _isDie = true;
         _navMeshAgent.ResetPath();
+        GetComponent<AudioSource>().Stop();
     }
 
     #endregion
@@ -70,7 +92,13 @@ public class MonoEnemyController : MonoBehaviour
         if (_isDie)
             return;
 
+        if (_isDamaging)
+            return;
+
         Vector3 directionToPlayer = _player.transform.position - transform.position;
+
+        if (_isAttacking)
+            return;
 
         if (IsPlayerInAttackRange())
         {

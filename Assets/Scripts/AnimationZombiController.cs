@@ -4,6 +4,7 @@ using UnityEngine;
 public class AnimationZombiController : MonoBehaviour
 {
     public event Action OnAttackFinish;
+    public event Action OnDamageFinish;
 
     private Animator _animator;
 
@@ -57,11 +58,20 @@ public class AnimationZombiController : MonoBehaviour
     public void AttackAnimation()
     {
         _animator.SetTrigger("attack");
-        Invoke(nameof(AttackFinish), 1.5f);
     }
 
-    public void AttackFinish()
+    public void GetDamageAnimation()
+    {
+        _animator.SetTrigger("damage");
+    }
+
+    public void Kick()
     {
         OnAttackFinish?.Invoke();
+    }
+
+    public void Damage()
+    {
+        OnDamageFinish?.Invoke();
     }
 }

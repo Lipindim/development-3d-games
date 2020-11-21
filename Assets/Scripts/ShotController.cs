@@ -62,7 +62,7 @@ public class ShotController : MonoBehaviour
                 {
                     decal = Instantiate(_woodDecal, hit.point, rotation);
                 }
-                else if (targetGameObject.CompareTag("Metal") || targetGameObject.transform.parent.gameObject.CompareTag("Metal"))
+                else if (targetGameObject.CompareTag("Metal"))
                 {
                     decal = Instantiate(_metallDecal, hit.point, rotation);
                 }

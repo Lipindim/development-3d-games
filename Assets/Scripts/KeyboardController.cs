@@ -12,6 +12,7 @@ public class KeyboardController : MonoBehaviour
 
     private HealthController _playerHealthController;
     private ShotController _shotController;
+    private ActivationItemController _activationItemController;
 
     #endregion
 
@@ -22,6 +23,7 @@ public class KeyboardController : MonoBehaviour
     {
         _playerHealthController = GetComponent<HealthController>();
         _shotController = _gun.GetComponent<ShotController>();
+        _activationItemController = GetComponent<ActivationItemController>();
     }
 
     private void Update()
@@ -34,6 +36,10 @@ public class KeyboardController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
             _mainMenu.PauseGame();
+
+        if (Input.GetKeyDown(KeyCode.E))
+            _activationItemController.Activate();
+
     }
 
     #endregion
