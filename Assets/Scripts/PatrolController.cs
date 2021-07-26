@@ -79,6 +79,8 @@ public class PatrolController : MonoBehaviour
         if (_patrolPoints == null || _patrolPoints.Length == 0)
             return;
 
+        _animator.SetFloat("Speed", 1.0f);
+
 
         if ((_targetPosition - CurrentPatrolPosition).sqrMagnitude > DISTANSE_ERROR)
         {
@@ -100,6 +102,7 @@ public class PatrolController : MonoBehaviour
 
     private void Wait()
     {
+        _animator.SetFloat("Speed", 0.0f);
         _currentWaitTime -= Time.deltaTime;
     }
 }

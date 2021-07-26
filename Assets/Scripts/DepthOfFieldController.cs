@@ -30,10 +30,16 @@ public class DepthOfFieldController : MonoBehaviour
             return;
 
         if (depthOfField.focusDistance.value - DEPTH_OFFSET < hit.distance)
-            depthOfField.focusDistance.value += Time.deltaTime * _depthChangeSpeed;
+        {
+            //depthOfField.focusDistance.value += Time.deltaTime * _depthChangeSpeed;
+            depthOfField.focusDistance.value += (hit.distance - depthOfField.focusDistance.value + DEPTH_OFFSET) / 10;
+        }
 
         if (depthOfField.focusDistance.value - DEPTH_OFFSET > hit.distance)
-            depthOfField.focusDistance.value -= Time.deltaTime * _depthChangeSpeed;
+        {
+            //depthOfField.focusDistance.value -= Time.deltaTime * _depthChangeSpeed;
+            depthOfField.focusDistance.value -= (depthOfField.focusDistance.value - DEPTH_OFFSET + hit.distance) / 10;
+        }
 
         print($"{depthOfField.focusDistance.value:n2}:{hit.distance:n2}");
     }

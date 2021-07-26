@@ -11,9 +11,11 @@ public class ShotController : MonoBehaviour
     [SerializeField] private GameObject _woodDecal;
     [SerializeField] private GameObject _metallDecal;
     [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioSource _gilzAudio;
     [SerializeField] private Animator _animator;
     [SerializeField] private ParticleSystem _muzzleFlashEffect;
-
+    [SerializeField] private ObjectSpawner _sleeveSpawner;
+ 
     [SerializeField] private LayerMask _mask;
     [SerializeField] private float _reloadTime = 1.0f;
 
@@ -47,7 +49,8 @@ public class ShotController : MonoBehaviour
 
              _isReload = true;
             Invoke(nameof(Reload), _reloadTime);
-            //Сделать рэйкаст и попадание
+
+            _sleeveSpawner.SpawnObject();
 
             RaycastHit hit;
             var rayCast = Physics.Raycast(_sightPosition.position, _sightPosition.forward, out hit);
@@ -91,6 +94,7 @@ public class ShotController : MonoBehaviour
     public void PlayShotSound()
     {
         _audioSource.Play();
+        _gilzAudio.Play();
     }
 
     private void ShootCompleted()
